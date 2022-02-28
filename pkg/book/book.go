@@ -111,6 +111,9 @@ func groupWordsByFrequency(wordCount map[string]int) (result MapWordFrequency, k
 }
 
 func GetTopTenWords(contents []byte) []Rank {
+	if len(contents) == 0 {
+		return nil
+	}
 	book := NewBook(contents)
 	book.ScanWords()
 

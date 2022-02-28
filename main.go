@@ -4,19 +4,20 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mj-hagonoy/get-top-ten/handler"
 )
 
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	router := mux.NewRouter()
+	router.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Content-type", "application/json")
 		w.Write([]byte(`{"message": "OK"}`))
-	})
+	}).Methods(http.MethodGet)
 
-	mux.HandleFunc("/top10", handler.GetTopTen)
+	router.HandleFunc("/top10", handler.GetTopTen).Methods(http.MethodPost)
 
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":8080", router); err != nil {
 		log.Fatalf("http.ListenAndServe: %s", err.Error())
 	}
 }

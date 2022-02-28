@@ -2,8 +2,8 @@ package book
 
 import (
 	"bufio"
+	"regexp"
 	"sort"
-	"strings"
 	"sync"
 )
 
@@ -59,34 +59,16 @@ func (book *Book) parseLines(buf []byte) {
 
 func (book *Book) parseWords(wg *sync.WaitGroup, buf []byte) {
 	defer wg.Done()
-	for {
-		adv, token, err := bufio.ScanWords(buf, true)
-		if adv == 0 || err != nil {
-			break
-		}
-		word := cleanWord(string(token))
+	re := regexp.MustCompile("[a-zA-Z0-9]+")
+	words := re.FindAllString(string(buf), -1)
 
-		book.wordCountMutext.Lock()
-		book.wordCount[word]++
-		book.wordCountMutext.Unlock()
-
-		if adv <= len(buf) {
-			buf = buf[adv:]
+	book.wordCountMutext.Lock()
+	for _, word := range words {
+		if ValidateWord(word) {
+			book.wordCount[word]++
 		}
 	}
-}
-func cleanWord(word string) string {
-	//word = strings.ToLower(word)
-	word = strings.ReplaceAll(word, `.`, ``)
-	word = strings.ReplaceAll(word, `'s`, ``)
-	word = strings.ReplaceAll(word, `?`, ``)
-	word = strings.ReplaceAll(word, `!`, ``)
-	word = strings.ReplaceAll(word, `:`, ``)
-	word = strings.ReplaceAll(word, `;`, ``)
-	word = strings.ReplaceAll(word, `,`, ``)
-	word = strings.ReplaceAll(word, `'`, ``)
-	word = strings.ReplaceAll(word, `)`, ``)
-	return word
+	book.wordCountMutext.Unlock()
 }
 
 func groupWordsByFrequency(wordCount map[string]int) (result MapWordFrequency, keys []int) {

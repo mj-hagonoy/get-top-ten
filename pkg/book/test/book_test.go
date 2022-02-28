@@ -13,7 +13,7 @@ func TestScanWords(t *testing.T) {
 	expectedWords := []string{`The`, `greatest`, `glory`, `in`, `living`, `lies`, `not`, `never`, `falling`, `but`, `rising`, `every`, `time`, `we`, `fall`}
 
 	start := time.Now()
-	book := book.NewBook([]byte(testCase))
+	book := book.NewBook(testCase)
 	book.ScanWords()
 	elapsed := time.Since(start)
 	t.Logf("book.ScanWords() completed in %s", elapsed)
@@ -39,7 +39,7 @@ func TestGetTopTenWord(t *testing.T) {
 			t.Fatalf("file %s cause error %s", file, err.Error())
 		}
 		start := time.Now()
-		top10 := book.GetTopTenWords(data)
+		top10 := book.GetTopTenWords(string(data))
 		elapsed := time.Since(start)
 		t.Logf("GetTopTenWords() for file %s completed in %s", file, elapsed)
 		t.Logf("file: %s\ntop 10:\n%+v", file, top10)

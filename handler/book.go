@@ -28,7 +28,7 @@ func GetTopTen(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var response TopTenResponse
-	response.Data = book.GetTopTenWords([]byte(body.Data))
+	response.Data = book.GetTopTenWords(body.Data)
 
 	byteResponse, err := json.Marshal(response)
 	if err != nil {

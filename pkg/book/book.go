@@ -1,7 +1,6 @@
 package book
 
 import (
-	"bufio"
 	"regexp"
 	"sort"
 	"sync"
@@ -20,12 +19,12 @@ type WordFrequency struct {
 type MapWordFrequency map[int]WordFrequency
 
 type Book struct {
-	contents        []byte
+	contents        string
 	wordCount       map[string]int
 	wordCountMutext sync.RWMutex
 }
 
-func NewBook(input []byte) *Book {
+func NewBook(input string) *Book {
 	book := &Book{
 		contents:  input,
 		wordCount: make(map[string]int),
@@ -42,37 +41,18 @@ func (book *Book) GetWords() map[string]int {
 
 // ScanWords extracts words from Book.contents
 func (book *Book) ScanWords() {
-	book.parseLines(book.contents)
+	book.parseWords(book.contents)
 }
 
-func (book *Book) parseLines(buf []byte) {
-	var wg sync.WaitGroup
-	for {
-		adv, token, err := bufio.ScanLines(buf, true)
-		if adv == 0 || err != nil {
-			break
-		}
-		wg.Add(1)
-		go book.parseWords(&wg, token)
-		if adv <= len(buf) {
-			buf = buf[adv:]
-		}
-	}
-	wg.Wait()
-}
-
-func (book *Book) parseWords(wg *sync.WaitGroup, buf []byte) {
-	defer wg.Done()
+func (book *Book) parseWords(input string) {
 	re := regexp.MustCompile("[a-zA-Z0-9]+")
-	words := re.FindAllString(string(buf), -1)
-
-	book.wordCountMutext.Lock()
-	for _, word := range words {
+	matches := re.FindAllString(input, -1)
+	for _, match := range matches {
+		word := string(match)
 		if ValidateWord(word) {
 			book.wordCount[word]++
 		}
 	}
-	book.wordCountMutext.Unlock()
 }
 
 // groupWordsByFrequency accepts wordCount map
@@ -105,7 +85,7 @@ func groupWordsByFrequency(wordCount map[string]int) (result MapWordFrequency, k
 
 // GetTopTenWords accepts array bytes (text)
 // and returns the top 10 most used words
-func GetTopTenWords(contents []byte) []Rank {
+func GetTopTenWords(contents string) []Rank {
 	if len(contents) == 0 {
 		return nil
 	}

@@ -1,4 +1,4 @@
-package handler
+package test
 
 import (
 	"bytes"
@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/mj-hagonoy/get-top-ten/handler"
 )
 
 func TestGetTopTen(t *testing.T) {
@@ -19,7 +21,7 @@ func TestGetTopTen(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "/top10", bytes.NewBuffer(json_data))
 	w := httptest.NewRecorder()
 
-	GetTopTen(w, req)
+	handler.GetTopTen(w, req)
 	res := w.Result()
 	defer res.Body.Close()
 	data, err := ioutil.ReadAll(res.Body)

@@ -1,9 +1,11 @@
-package book
+package test
 
 import (
 	"io/ioutil"
 	"testing"
 	"time"
+
+	"github.com/mj-hagonoy/get-top-ten/pkg/book"
 )
 
 func TestScanWords(t *testing.T) {
@@ -11,7 +13,7 @@ func TestScanWords(t *testing.T) {
 	expectedWords := []string{`The`, `greatest`, `glory`, `in`, `living`, `lies`, `not`, `never`, `falling`, `but`, `rising`, `every`, `time`, `we`, `fall`}
 
 	start := time.Now()
-	book := NewBook([]byte(testCase))
+	book := book.NewBook([]byte(testCase))
 	book.ScanWords()
 	elapsed := time.Since(start)
 	t.Logf("book.ScanWords() completed in %s", elapsed)
@@ -25,10 +27,10 @@ func TestScanWords(t *testing.T) {
 
 func TestGetTopTenWord(t *testing.T) {
 	testCases := []string{
-		`.\sample\moby-dick.txt`,
-		`.\sample\short-text.txt`,
-		`.\sample\the-divine-comedy.txt`,
-		`.\sample\the-king-james-bible.txt`,
+		`.\moby-dick.txt`,
+		`.\short-text.txt`,
+		`.\the-divine-comedy.txt`,
+		`.\the-king-james-bible.txt`,
 	}
 
 	for _, file := range testCases {
@@ -37,7 +39,7 @@ func TestGetTopTenWord(t *testing.T) {
 			t.Fatalf("file %s cause error %s", file, err.Error())
 		}
 		start := time.Now()
-		top10 := GetTopTenWords(data)
+		top10 := book.GetTopTenWords(data)
 		elapsed := time.Since(start)
 		t.Logf("GetTopTenWords() for file %s completed in %s", file, elapsed)
 		t.Logf("file: %s\ntop 10:\n%+v", file, top10)

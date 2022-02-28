@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io/ioutil"
+	"log"
 	"net/http"
 
 	"github.com/mj-hagonoy/get-top-ten/pkg/book"
@@ -37,5 +38,7 @@ func GetTopTen(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Add("Content-type", "application/json")
-	w.Write(byteResponse)
+	if _, err := w.Write(byteResponse); err != nil {
+		log.Printf("w.Write: %s\n", err)
+	}
 }

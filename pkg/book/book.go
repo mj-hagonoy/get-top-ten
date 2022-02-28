@@ -3,7 +3,6 @@ package book
 import (
 	"regexp"
 	"sort"
-	"sync"
 )
 
 type Rank struct {
@@ -19,9 +18,8 @@ type WordFrequency struct {
 type MapWordFrequency map[int]WordFrequency
 
 type Book struct {
-	contents        string
-	wordCount       map[string]int
-	wordCountMutext sync.RWMutex
+	contents  string
+	wordCount map[string]int
 }
 
 func NewBook(input string) *Book {

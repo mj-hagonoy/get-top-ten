@@ -36,7 +36,7 @@ make build
 ```
 make run
 ```
-* HTTP server will run in port `8080`
+* HTTP server will run in `localhost:8080`
 
 ### For Windows
 ```

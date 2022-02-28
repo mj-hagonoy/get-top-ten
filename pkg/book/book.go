@@ -2,8 +2,8 @@ package book
 
 import (
 	"bufio"
+	"regexp"
 	"sort"
-	"strings"
 	"sync"
 )
 
@@ -33,10 +33,14 @@ func NewBook(input []byte) *Book {
 	return book
 }
 
+// GetWords returns map of words found and corresponding count
+//
+// May return empty or nil when Book.ScanWords is not executed prior to GetWords
 func (book *Book) GetWords() map[string]int {
 	return book.wordCount
 }
 
+// ScanWords extracts words from Book.contents
 func (book *Book) ScanWords() {
 	book.parseLines(book.contents)
 }
@@ -59,36 +63,25 @@ func (book *Book) parseLines(buf []byte) {
 
 func (book *Book) parseWords(wg *sync.WaitGroup, buf []byte) {
 	defer wg.Done()
-	for {
-		adv, token, err := bufio.ScanWords(buf, true)
-		if adv == 0 || err != nil {
-			break
-		}
-		word := cleanWord(string(token))
+	re := regexp.MustCompile("[a-zA-Z0-9]+")
+	words := re.FindAllString(string(buf), -1)
 
-		book.wordCountMutext.Lock()
-		book.wordCount[word]++
-		book.wordCountMutext.Unlock()
-
-		if adv <= len(buf) {
-			buf = buf[adv:]
+	book.wordCountMutext.Lock()
+	for _, word := range words {
+		if ValidateWord(word) {
+			book.wordCount[word]++
 		}
 	}
-}
-func cleanWord(word string) string {
-	//word = strings.ToLower(word)
-	word = strings.ReplaceAll(word, `.`, ``)
-	word = strings.ReplaceAll(word, `'s`, ``)
-	word = strings.ReplaceAll(word, `?`, ``)
-	word = strings.ReplaceAll(word, `!`, ``)
-	word = strings.ReplaceAll(word, `:`, ``)
-	word = strings.ReplaceAll(word, `;`, ``)
-	word = strings.ReplaceAll(word, `,`, ``)
-	word = strings.ReplaceAll(word, `'`, ``)
-	word = strings.ReplaceAll(word, `)`, ``)
-	return word
+	book.wordCountMutext.Unlock()
 }
 
+// groupWordsByFrequency accepts wordCount map
+//
+// Returns:
+//
+// result MapWordFrequency : map with list words grouped by frequency
+//
+// keys []int : keys in decreasing order
 func groupWordsByFrequency(wordCount map[string]int) (result MapWordFrequency, keys []int) {
 	result = make(MapWordFrequency)
 	for word, frequency := range wordCount {
@@ -110,6 +103,8 @@ func groupWordsByFrequency(wordCount map[string]int) (result MapWordFrequency, k
 	return result, keys
 }
 
+// GetTopTenWords accepts array bytes (text)
+// and returns the top 10 most used words
 func GetTopTenWords(contents []byte) []Rank {
 	if len(contents) == 0 {
 		return nil

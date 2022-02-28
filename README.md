@@ -29,17 +29,20 @@ Response Body:
 
 ### Build
 ```
-go build main.go
+make build
 ```
 
-### Run
+### Running the server
 ```
-./main
+make run
 ```
-or
+* HTTP server will run in port `8080`
+
+### For Windows
 ```
-go run main.go
+make build-win
+make run-win
 ```
 
-
+* See `Makefile` for more details
 

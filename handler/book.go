@@ -2,7 +2,7 @@ package handler
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 
@@ -18,7 +18,7 @@ type TopTenResponse struct {
 }
 
 func GetTopTen(w http.ResponseWriter, r *http.Request) {
-	bytesData, err := ioutil.ReadAll(r.Body)
+	bytesData, err := io.ReadAll(r.Body)
 	if err != nil {
 		http.Error(w, "unable to read body", http.StatusBadRequest)
 		return

@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"github.com/mj-hagonoy/get-top-ten/handler"
@@ -15,9 +16,9 @@ import (
 var testInputs []map[string]interface{}
 
 func init() {
-	data, err := ioutil.ReadFile("./test-data.json")
+	data, err := os.ReadFile("./test-data.json")
 	if err != nil {
-		panic(fmt.Errorf("ioutil.ReadFile: %+v", err))
+		panic(fmt.Errorf("os.ReadFile: %+v", err))
 	}
 
 	if err := json.Unmarshal(data, &testInputs); err != nil {
@@ -40,9 +41,9 @@ func TestGetTopTen(t *testing.T) {
 		handler.GetTopTen(w, req)
 		res := w.Result()
 		defer res.Body.Close()
-		data, err := ioutil.ReadAll(res.Body)
+		data, err := io.ReadAll(res.Body)
 		if err != nil {
-			t.Logf("ioutil.ReadAll: expected error to be nil got %v", err)
+			t.Logf("io.ReadAll: expected error to be nil got %v", err)
 			t.Fail()
 			continue
 		}

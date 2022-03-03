@@ -1,7 +1,7 @@
 package test
 
 import (
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -34,7 +34,7 @@ func TestGetTopTenWord(t *testing.T) {
 	}
 
 	for _, file := range testCases {
-		data, err := ioutil.ReadFile(file)
+		data, err := os.ReadFile(file)
 		if err != nil {
 			t.Fatalf("file %s cause error %s", file, err.Error())
 		}
